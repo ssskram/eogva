@@ -1,11 +1,22 @@
 <template>
   <div class="crops-container" v-if="selectedArea">
-    <h2>Crops for {{ selectedArea.name }}</h2>
-    <ul>
-      <li v-for="crop in selectedArea.crops" :key="crop.name">
-        {{ crop.name }} (Min: {{ crop.minSupply }} Max: {{ crop.maxSupply }})
-      </li>
-    </ul>
+    <h2>{{ selectedArea.name }}</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Crop Name</th>
+          <th>Min Supply</th>
+          <th>Max Supply</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="crop in selectedArea.crops" :key="crop.name">
+          <td>{{ crop.name }}</td>
+          <td>{{ crop.minSupply }}</td>
+          <td>{{ crop.maxSupply }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -14,7 +25,7 @@ import { computed } from "vue";
 import { useAreasOfInterestStore } from "@/store/areasOfInterest";
 
 const store = useAreasOfInterestStore();
-const selectedArea = computed(() => store.selectedArea); // Get the selected area from the store
+const selectedArea = computed(() => store.selectedArea);
 </script>
 
 <style scoped>
@@ -39,12 +50,20 @@ h2 {
   color: #333;
 }
 
-ul {
-  list-style-type: none;
-  padding-left: 0;
+table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-li {
-  margin-bottom: 8px;
+th,
+td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  font-weight: 300;
+}
+
+th {
+  color: #666;
 }
 </style>

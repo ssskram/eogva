@@ -1,10 +1,16 @@
 <template>
-  <div class="polygon-tool-card" v-if="!isPolygonDrawn">
-    <p>👉 Use the polygon tool to create a new area of interest 👉</p>
-  </div>
-  <div class="polygon-tool-card" v-else>
-    <input v-model="areaName" placeholder="Name for area" class="input" />
-    <button @click="saveArea" class="save-btn">Save</button>
+  <div class="polygon-tool-card">
+    <p v-if="!isPolygonDrawn" class="prompt-text">
+      Use the polygon tool to create a new area of interest 👉
+    </p>
+    <form v-else @submit.prevent="saveArea" class="form-container">
+      <input
+        v-model="areaName"
+        placeholder="Enter a name for the area"
+        class="input"
+      />
+      <button type="submit" class="save-btn">Save</button>
+    </form>
   </div>
 </template>
 
@@ -13,8 +19,8 @@ import { ref, watch } from "vue";
 import { useAreasOfInterestStore } from "@/store/areasOfInterest";
 
 const store = useAreasOfInterestStore();
-const areaName = ref(""); // Holds the name for the new AoI
-const isPolygonDrawn = ref(false); // Tracks if a polygon has been drawn
+const areaName = ref("");
+const isPolygonDrawn = ref(false);
 
 const saveArea = () => {
   if (areaName.value.trim() && store.newAreaCoordinates.length > 0) {
@@ -23,20 +29,21 @@ const saveArea = () => {
       coordinates: store.newAreaCoordinates,
       dateCreated: new Date(),
       dateUpdated: new Date(),
-      crops: [], // Default empty crops for the new area
+      crops: [],
     });
-    store.clearNewAreaCoordinates(); // Clear coordinates after saving
-    areaName.value = ""; // Clear input after saving
-    isPolygonDrawn.value = false; // Reset UI after saving
+    store.clearNewAreaCoordinates();
+    areaName.value = "";
+    isPolygonDrawn.value = false;
+  } else {
+    alert("The name cannot be blank.");
   }
 };
 
-// Watch for polygon being drawn and show input form
 watch(
   () => store.newAreaCoordinates,
   (newCoordinates) => {
     if (newCoordinates.length > 0) {
-      isPolygonDrawn.value = true; // Show input and save button when polygon is drawn
+      isPolygonDrawn.value = true;
     }
   }
 );
@@ -49,34 +56,40 @@ watch(
   left: 50%;
   transform: translateX(-50%);
   background-color: rgba(255, 255, 255, 0.95);
-  padding: 16px;
+  padding: 20px;
   border-radius: 12px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   z-index: 15;
 }
 
-.polygon-tool-card p {
+.prompt-text {
+  font-size: 18px;
   margin: 0;
-  font-size: 14px;
+}
+
+.form-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .input {
-  width: 200px;
-  padding: 8px;
-  margin-right: 10px;
+  width: 300px;
+  padding: 12px;
+  font-size: 16px;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .save-btn {
-  padding: 8px 12px;
+  padding: 12px 20px;
+  font-size: 16px;
   background-color: #4caf50;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
 }
 

@@ -47,34 +47,57 @@ const initializeMap = async () => {
 // Function to draw all polygons in the store
 const drawPolygons = () => {
   if (draw && store.areas.length > 0) {
-    draw.deleteAll(); // Clear previous polygons
+    draw.deleteAll();
 
     store.areas.forEach((area) => {
+      const isSelected = store.selectedArea?.name === area.name;
       const feature = {
-        type: "Feature" as const, // Ensure the type is "Feature"
+        type: "Feature" as const,
         geometry: {
-          type: "Polygon" as const, // Explicitly define the type as "Polygon"
-          coordinates: [area.coordinates] as number[][][], // Ensure coordinates is typed correctly
+          type: "Polygon" as const,
+          coordinates: [area.coordinates] as number[][][],
         },
-        properties: {},
+        properties: {
+          color: isSelected ? "#0000FF" : "rgba(128, 128, 128, 0.5)", // Blue for selected, grey for others
+        },
       };
 
       draw?.add(feature);
     });
+
+    // If an area is selected, fit map bounds to the selected polygon
+    if (store.selectedArea) {
+      const selectedPolygon = store.selectedArea.coordinates;
+      const bounds = calculateBoundingBox(selectedPolygon);
+      map?.fitBounds(bounds, { padding: 200 }); // Increased padding to avoid polygon filling the entire screen
+    }
   }
+};
+
+// Calculate bounding box from polygon coordinates
+const calculateBoundingBox = (
+  coordinates: number[][]
+): [number, number, number, number] => {
+  const lats = coordinates.map((coord) => coord[1]);
+  const lngs = coordinates.map((coord) => coord[0]);
+  const minLat = Math.min(...lats);
+  const maxLat = Math.max(...lats);
+  const minLng = Math.min(...lngs);
+  const maxLng = Math.max(...lngs);
+  return [minLng, minLat, maxLng, maxLat];
 };
 
 watch(
   () => store.selectedArea,
   () => {
-    drawPolygons(); // Update polygons when selection changes
+    drawPolygons();
   }
 );
 
 watch(
   () => store.areas,
   () => {
-    drawPolygons(); // Redraw polygons when new areas are added
+    drawPolygons();
   }
 );
 
@@ -82,7 +105,7 @@ onMounted(async () => {
   mapboxgl.accessToken =
     "pk.eyJ1Ijoic3Nza3JhbSIsImEiOiJja3Nvd25veHEwMDVyMm5wbm92Zm5jbGp1In0.ADb1kC_9vj4D9psqDa6dqA";
   await initializeMap();
-  initializeDrawingTools(); // Initialize drawing tools on mount
+  initializeDrawingTools();
   window.addEventListener("resize", forceMapResize);
 });
 
@@ -93,7 +116,6 @@ onBeforeUnmount(() => {
   window.removeEventListener("resize", forceMapResize);
 });
 
-// Initialize drawing tools
 const initializeDrawingTools = () => {
   if (map && !draw) {
     draw = new MapboxDraw({
@@ -106,19 +128,18 @@ const initializeDrawingTools = () => {
     });
     map.addControl(draw, "bottom-right");
 
-    // Listen for polygon draw events and update store
     map.on("draw.create", updatePolygon);
   }
 };
 
-// When a polygon is drawn, save the coordinates in the store and select it
+// When a polygon is drawn, save the coordinates in the store
 const updatePolygon = () => {
   if (draw) {
     const data = draw.getAll();
     if (data.features.length > 0) {
       const polygon = data.features[data.features.length - 1].geometry as any;
       const coordinates = polygon.coordinates[0];
-      store.setNewAreaCoordinates(coordinates); // Just set the polygon coordinates
+      store.setNewAreaCoordinates(coordinates);
     }
   }
 };

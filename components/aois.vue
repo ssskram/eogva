@@ -7,8 +7,9 @@
       <thead>
         <tr>
           <th>Name</th>
-          <th>Date Created</th>
-          <th>Date Updated</th>
+          <th>Last Updated</th>
+          <th>Delete</th>
+          <th>Modify</th>
         </tr>
       </thead>
       <tbody>
@@ -20,8 +21,9 @@
           class="clickable-row"
         >
           <td>{{ area.name }}</td>
-          <td>{{ formatDate(area.dateCreated) }}</td>
           <td>{{ formatDate(area.dateUpdated) }}</td>
+          <td><button @click.stop="deleteArea(area.name)">Delete</button></td>
+          <td><button @click.stop="modifyArea(area)">Modify</button></td>
         </tr>
       </tbody>
     </table>
@@ -38,8 +40,19 @@ const formatDate = (date) => {
   return date.toLocaleDateString();
 };
 
+// Select an area to highlight
 const selectArea = (area) => {
-  store.selectArea(area); // Mark the area as selected in the store
+  store.selectArea(area);
+};
+
+// Delete an area
+const deleteArea = (name) => {
+  store.deleteArea(name);
+};
+
+// Modify an existing area by enabling the drawing tool
+const modifyArea = (area) => {
+  store.modifyArea(area);
 };
 
 const isSelected = (area) => {
@@ -52,7 +65,7 @@ const isSelected = (area) => {
   position: fixed;
   top: 80px;
   left: 20px;
-  width: 280px;
+  width: 350px;
   background-color: rgba(240, 240, 240, 0.9);
   color: #333;
   padding: 16px;
@@ -91,6 +104,6 @@ th {
 }
 
 .selected {
-  background-color: #e0f7fa; /* Highlight the selected row */
+  background-color: #e0f7fa;
 }
 </style>
