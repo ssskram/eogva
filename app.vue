@@ -1,67 +1,83 @@
 <template>
-  <div class="map-container">
-    <div ref="mapContainer" class="map-child"></div>
+  <div class="app-container">
+    <header class="header">
+      <h2>
+        <span class="brand">GVA</span>
+        <span class="product">Earth Observation</span>
+      </h2>
+      <div class="user-info">
+        <button class="logout-btn">Logout</button>
+      </div>
+    </header>
+
+    <MapComponent />
+    <AreasOfInterest />
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted, nextTick, onBeforeUnmount } from "vue";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
-
-const mapContainer = ref<HTMLDivElement | null>(null);
-let map: mapboxgl.Map | null = null;
-
-const forceMapResize = () => {
-  if (map) {
-    requestAnimationFrame(() => {
-      map?.resize();
-    });
-  }
-};
-
-const initializeMap = async () => {
-  await nextTick();
-
-  if (mapContainer.value && !map) {
-    map = new mapboxgl.Map({
-      container: mapContainer.value,
-      style: "mapbox://styles/mapbox/satellite-v9",
-      center: [-121.6555, 36.6777],
-      zoom: 10,
-    });
-
-    map.on("load", () => {
-      forceMapResize();
-    });
-  }
-};
-
-onMounted(async () => {
-  mapboxgl.accessToken =
-    "pk.eyJ1Ijoic3Nza3JhbSIsImEiOiJja3Nvd25veHEwMDVyMm5wbm92Zm5jbGp1In0.ADb1kC_9vj4D9psqDa6dqA";
-  await initializeMap();
-  window.addEventListener("resize", forceMapResize);
-});
-
-onBeforeUnmount(() => {
-  if (map) {
-    map.remove();
-  }
-  window.removeEventListener("resize", forceMapResize);
-});
+<script setup>
+import MapComponent from "./components/map.vue";
+import AreasOfInterest from "./components/aois.vue";
 </script>
 
 <style scoped>
-.map-container {
-  position: relative;
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #f5f5dc;
+  text-align: left;
+  padding-left: 20px;
+  padding-right: 10px;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "Roboto", sans-serif;
 }
 
-.map-child {
-  position: relative;
-  width: 100%;
-  height: 100%;
+.brand {
+  font-weight: 100;
+  margin-right: 10px;
+}
+
+.product {
+  font-weight: 700;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.logout-btn {
+  background-color: transparent;
+  border: 1px solid #f5f5dc;
+  color: #f5f5dc;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 40px;
+  font-family: "Roboto", sans-serif;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.app-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1 {
+  margin: 0;
 }
 </style>
