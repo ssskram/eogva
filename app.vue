@@ -11,13 +11,27 @@
     </header>
 
     <MapComponent />
-    <AreasOfInterest />
+    
+    <!-- Conditionally render aois.vue based on areas in the store -->
+    <AreasOfInterest v-if="hasAreas" />
+
+    <!-- Always render PolygonToolCard at the bottom center -->
+    <PolygonToolCard />
   </div>
 </template>
 
 <script setup>
+import { computed } from "vue";
+import { useAreasOfInterestStore } from "@/store/areasOfInterest"; // Pinia store
 import MapComponent from "./components/map.vue";
 import AreasOfInterest from "./components/aois.vue";
+import PolygonToolCard from "./components/polygonToolCard.vue"; // New card component
+
+// Access the store
+const store = useAreasOfInterestStore();
+
+// Computed property to determine if there are areas in the store
+const hasAreas = computed(() => store.areas.length > 0);
 </script>
 
 <style scoped>

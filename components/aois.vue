@@ -1,28 +1,27 @@
 <template>
   <div class="aoi-container">
-    <h2>Areas of Interest</h2>
+    <div class="header-row">
+      <h2>Areas of Interest</h2>
+    </div>
     <table>
       <thead>
         <tr>
           <th>Name</th>
           <th>Date Created</th>
           <th>Date Updated</th>
-          <th>Crops</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="area in areasOfInterest" :key="area.name">
+        <tr
+          v-for="area in areas"
+          :key="area.name"
+          @click="selectArea(area)"
+          :class="{ selected: isSelected(area) }"
+          class="clickable-row"
+        >
           <td>{{ area.name }}</td>
           <td>{{ formatDate(area.dateCreated) }}</td>
           <td>{{ formatDate(area.dateUpdated) }}</td>
-          <td>
-            <ul>
-              <li v-for="crop in area.crops" :key="crop.name">
-                {{ crop.name }} (Min: {{ crop.minSupply }} Max:
-                {{ crop.maxSupply }})
-              </li>
-            </ul>
-          </td>
         </tr>
       </tbody>
     </table>
@@ -30,31 +29,21 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { useAreasOfInterestStore } from "@/store/areasOfInterest";
 
-const areasOfInterest = ref([
-  {
-    name: "Area 1",
-    dateCreated: new Date(),
-    dateUpdated: new Date(),
-    crops: [
-      { name: "Corn", minSupply: 10.5, maxSupply: 50.0 },
-      { name: "Wheat", minSupply: 5.0, maxSupply: 30.0 },
-    ],
-  },
-  {
-    name: "Area 2",
-    dateCreated: new Date(),
-    dateUpdated: new Date(),
-    crops: [
-      { name: "Rice", minSupply: 15.5, maxSupply: 60.0 },
-      { name: "Barley", minSupply: 8.0, maxSupply: 25.0 },
-    ],
-  },
-]);
+const store = useAreasOfInterestStore();
+const areas = store.areas;
 
 const formatDate = (date) => {
   return date.toLocaleDateString();
+};
+
+const selectArea = (area) => {
+  store.selectArea(area); // Mark the area as selected in the store
+};
+
+const isSelected = (area) => {
+  return store.selectedArea?.name === area.name;
 };
 </script>
 
@@ -74,6 +63,12 @@ const formatDate = (date) => {
   overflow-y: auto;
 }
 
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -91,18 +86,11 @@ th {
   color: #666;
 }
 
-ul {
-  list-style-type: none;
-  padding-left: 0;
+.clickable-row {
+  cursor: pointer;
 }
 
-li {
-  margin-bottom: 4px;
-}
-
-h2 {
-  margin: 0 0 16px;
-  font-weight: 400;
-  color: #333;
+.selected {
+  background-color: #e0f7fa; /* Highlight the selected row */
 }
 </style>
