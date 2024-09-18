@@ -21,9 +21,9 @@
 import { computed } from "vue";
 import { useAreasOfInterestStore } from "@/store/areasOfInterest";
 import MapComponent from "./components/map.vue";
-import AreasOfInterest from "./components/aois.vue";
+import AreasOfInterest from "./components/aoiTable.vue";
 import CropsComponent from "./components/aoiCrops.vue";
-import CreateButton from "./components/create.vue";
+import CreateButton from "./components/footer.vue";
 
 const store = useAreasOfInterestStore();
 

@@ -3,7 +3,7 @@
     <header class="header">
       <h3>Areas of Interest</h3>
     </header>
-    <div class="aois-table">
+    <div class="aoi-table">
       <table>
         <thead>
           <tr>
@@ -64,7 +64,7 @@ const isSelected = (area) => {
   overflow-y: auto;
 }
 
-.aois-table {
+.aoi-table {
   padding: 0 15px 15px 15px;
 }
 
