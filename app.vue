@@ -11,12 +11,8 @@
     </header>
 
     <MapComponent />
-
     <AreasOfInterest v-if="hasAreas" />
-
-    <AoiCrops v-if="selectedArea" />
-    <!-- Add aoiCrops component here -->
-
+    <CropsComponent v-if="hasSelectedArea" />
     <CreateButton />
   </div>
 </template>
@@ -26,13 +22,13 @@ import { computed } from "vue";
 import { useAreasOfInterestStore } from "@/store/areasOfInterest";
 import MapComponent from "./components/map.vue";
 import AreasOfInterest from "./components/aois.vue";
+import CropsComponent from "./components/aoiCrops.vue";
 import CreateButton from "./components/create.vue";
-import AoiCrops from "./components/aoiCrops.vue";
 
 const store = useAreasOfInterestStore();
 
 const hasAreas = computed(() => store.areas.length > 0);
-const selectedArea = computed(() => store.selectedArea);
+const hasSelectedArea = computed(() => store.selectedArea !== null);
 </script>
 
 <style scoped>
@@ -77,12 +73,6 @@ const selectedArea = computed(() => store.selectedArea);
   cursor: pointer;
   margin-right: 40px;
   font-family: "Roboto", sans-serif;
-}
-
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
 }
 
 .app-container {

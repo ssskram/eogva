@@ -1,7 +1,7 @@
 <template>
   <div class="polygon-tool-card">
     <p v-if="!isPolygonDrawn" class="prompt-text">
-      Use the polygon tool to create a new area of interest 👉
+      Use the polygon tool to create new areas of interest 👉
     </p>
     <form v-else @submit.prevent="saveArea" class="form-container">
       <input
@@ -24,7 +24,7 @@ const isPolygonDrawn = ref(false);
 
 const saveArea = () => {
   if (areaName.value.trim() && store.newAreaCoordinates.length > 0) {
-    store.addAreaOfInterest({
+    const area = store.addAreaOfInterest({
       name: areaName.value.trim(),
       coordinates: store.newAreaCoordinates,
       dateCreated: new Date(),

@@ -44,37 +44,31 @@ const initializeMap = async () => {
   }
 };
 
-// Function to draw all polygons in the store
 const drawPolygons = () => {
   if (draw && store.areas.length > 0) {
     draw.deleteAll();
 
     store.areas.forEach((area) => {
-      const isSelected = store.selectedArea?.name === area.name;
       const feature = {
         type: "Feature" as const,
         geometry: {
           type: "Polygon" as const,
           coordinates: [area.coordinates] as number[][][],
         },
-        properties: {
-          color: isSelected ? "#0000FF" : "rgba(128, 128, 128, 0.5)", // Blue for selected, grey for others
-        },
+        properties: {},
       };
 
       draw?.add(feature);
     });
 
-    // If an area is selected, fit map bounds to the selected polygon
     if (store.selectedArea) {
       const selectedPolygon = store.selectedArea.coordinates;
       const bounds = calculateBoundingBox(selectedPolygon);
-      map?.fitBounds(bounds, { padding: 200 }); // Increased padding to avoid polygon filling the entire screen
+      map?.fitBounds(bounds, { padding: 250 });
     }
   }
 };
 
-// Calculate bounding box from polygon coordinates
 const calculateBoundingBox = (
   coordinates: number[][]
 ): [number, number, number, number] => {
@@ -122,7 +116,7 @@ const initializeDrawingTools = () => {
       displayControlsDefault: false,
       controls: {
         polygon: true,
-        trash: true,
+        trash: false,
       },
       defaultMode: "draw_polygon",
     });
@@ -132,7 +126,6 @@ const initializeDrawingTools = () => {
   }
 };
 
-// When a polygon is drawn, save the coordinates in the store
 const updatePolygon = () => {
   if (draw) {
     const data = draw.getAll();
