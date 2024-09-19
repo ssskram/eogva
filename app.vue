@@ -11,9 +11,10 @@
     </header>
 
     <MapComponent />
-    <AreasOfInterest v-if="hasAreas" />
-    <CropsComponent v-if="hasSelectedArea" />
-    <CreateButton />
+    <AreasOfInterest v-if="!store.drawingToolActive && !creatingArea && hasAreas" />
+    <Crops v-if="!store.drawingToolActive && !creatingArea && hasSelectedArea" />
+    <CropGraph v-if="!store.drawingToolActive && !creatingArea && store.selectedCrop && store.selectedArea"/>
+    <CreateButton v-if="creatingArea" />
   </div>
 </template>
 
@@ -22,11 +23,13 @@ import { computed } from "vue";
 import { useAreasOfInterestStore } from "@/store/areasOfInterest";
 import MapComponent from "./components/map.vue";
 import AreasOfInterest from "./components/aoiTable.vue";
-import CropsComponent from "./components/aoiCrops.vue";
+import Crops from "./components/aoiCrops.vue";
+import CropGraph from "./components/aoiCropGraph.vue";
 import CreateButton from "./components/footer.vue";
 
 const store = useAreasOfInterestStore();
 
+const creatingArea = computed(() => store.newAreaCoordinates.length > 0);
 const hasAreas = computed(() => store.areas.length > 0);
 const hasSelectedArea = computed(() => store.selectedArea !== null);
 </script>

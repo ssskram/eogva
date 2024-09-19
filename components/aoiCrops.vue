@@ -1,7 +1,7 @@
 <template>
   <div class="crops-container" v-if="selectedArea">
     <header class="header">
-      <h3>{{ selectedArea.name }}</h3>
+      <h3>{{ selectedArea.name }} Crops</h3>
     </header>
     <div class="crops-table">
       <table>
@@ -13,10 +13,16 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="crop in selectedArea.crops" :key="crop.name">
+          <tr
+            v-for="crop in selectedArea.crops"
+            :key="crop.name"
+            @click="selectCrop(crop)"
+            :class="{ selected: isSelectedCrop(crop) }"
+            class="clickable-row"
+          >
             <td>{{ crop.name }}</td>
-            <td>{{ crop.minSupply }}</td>
-            <td>{{ crop.maxSupply }}</td>
+            <td>{{ getLastMinValue(crop) }}</td>
+            <td>{{ getLastMaxValue(crop) }}</td>
           </tr>
         </tbody>
       </table>
@@ -30,6 +36,22 @@ import { useAreasOfInterestStore } from "@/store/areasOfInterest";
 
 const store = useAreasOfInterestStore();
 const selectedArea = computed(() => store.selectedArea);
+
+const selectCrop = (crop) => {
+  store.selectCrop(crop);
+};
+
+const isSelectedCrop = (crop) => {
+  return store.selectedCrop?.name === crop.name;
+};
+
+const getLastMinValue = (crop) => {
+  return crop.values[crop.values.length - 1].minSupply;
+};
+
+const getLastMaxValue = (crop) => {
+  return crop.values[crop.values.length - 1].maxSupply;
+};
 </script>
 
 <style scoped>
@@ -76,5 +98,13 @@ td {
 
 th {
   color: #666;
+}
+
+.clickable-row {
+  cursor: pointer;
+}
+
+.selected {
+  background-color: #e0f7fa;
 }
 </style>

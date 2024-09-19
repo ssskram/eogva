@@ -44,6 +44,16 @@ const initializeMap = async () => {
   }
 };
 
+watch(
+  () => store.newAreaCoordinates,
+  (newCoordinates) => {
+    if (newCoordinates.length > 0) {
+      const bounds = calculateBoundingBox(newCoordinates);
+      map?.fitBounds(bounds, { padding: 250 });
+    }
+  }
+);
+
 const drawPolygons = () => {
   if (draw && store.areas.length > 0) {
     draw.deleteAll();
@@ -119,10 +129,36 @@ const initializeDrawingTools = () => {
         trash: false,
       },
       defaultMode: "draw_polygon",
+      styles: [
+        {
+          id: "gl-draw-polygon-fill",
+          type: "fill",
+          paint: {
+            "fill-color": "#81d4fa",
+            "fill-opacity": 0.2,
+          },
+        },
+        {
+          id: "gl-draw-polygon-stroke",
+          type: "line",
+          paint: {
+            "line-color": "#81d4fa",
+            "line-width": 1.5,
+          },
+        },
+      ],
     });
+
     map.addControl(draw, "bottom-right");
 
+    store.toggleDrawingTool(true);
+
     map.on("draw.create", updatePolygon);
+    map.on("draw.modechange", (e) => {
+      if (e.mode === "simple_select") {
+        store.toggleDrawingTool(false);
+      }
+    });
   }
 };
 
@@ -130,9 +166,12 @@ const updatePolygon = () => {
   if (draw) {
     const data = draw.getAll();
     if (data.features.length > 0) {
-      const polygon = data.features[data.features.length - 1].geometry as any;
-      const coordinates = polygon.coordinates[0];
-      store.setNewAreaCoordinates(coordinates);
+      const polygon = data.features[data.features.length - 1].geometry;
+
+      if (polygon.type === "Polygon") {
+        const coordinates = polygon.coordinates[0];
+        store.setNewAreaCoordinates(coordinates);
+      }
     }
   }
 };

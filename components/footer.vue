@@ -1,12 +1,10 @@
 <template>
   <div class="polygon-tool-card">
-    <p v-if="!isPolygonDrawn" class="prompt-text">
-      Use the polygon tool to create new areas of interest 👉
-    </p>
-    <form v-else @submit.prevent="saveArea" class="form-container">
+    <form @submit.prevent="saveArea" class="form-container">
       <input
         v-model="areaName"
-        placeholder="Enter a name for the area"
+        ref="areaInput"
+        placeholder="Enter a name for this area"
         class="input"
       />
       <button type="submit" class="save-btn">Save</button>
@@ -15,16 +13,17 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useAreasOfInterestStore } from "@/store/areasOfInterest";
 
 const store = useAreasOfInterestStore();
 const areaName = ref("");
 const isPolygonDrawn = ref(false);
+const areaInput = ref(null);
 
 const saveArea = () => {
   if (areaName.value.trim() && store.newAreaCoordinates.length > 0) {
-    const area = store.addAreaOfInterest({
+    store.addAreaOfInterest({
       name: areaName.value.trim(),
       coordinates: store.newAreaCoordinates,
       dateCreated: new Date(),
@@ -38,6 +37,12 @@ const saveArea = () => {
     alert("The name cannot be blank.");
   }
 };
+
+onMounted(() => {
+  if (areaInput.value) {
+    areaInput.value.focus();
+  }
+});
 
 watch(
   () => store.newAreaCoordinates,
